@@ -271,4 +271,8 @@ iframe {
     .signInUp__signIn-container__form-socialMedia p{
         font-size: 15px;
     }
+
+    .signInUp__signIn-container__form{
+        margin: 2rem 1rem;
+    }
 }
