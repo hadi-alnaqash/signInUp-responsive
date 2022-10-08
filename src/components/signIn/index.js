@@ -1,14 +1,46 @@
 import emailLogo from '../../assets/email.png'
+import userlLogo from '../../assets/user.png'
 import passwordLogo from '../../assets/lock.png'
 import faceBookLogo from '../../assets/Facebook.png'
 import appleLogo from '../../assets/apple.png'
 import googleLogo from '../../assets/google.png'
 import hideEye from '../../assets/hideEye.svg'
 import eyeUnhideLogo from '../../assets/eye.svg'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import {loginUser} from '../../api'
+import swal from 'sweetalert'
 
 const SignIn = () => {
     const [isShowPass, setShowPass ] =useState(false)
+    const [ username, setusername] = useState(null)
+    const [ password, setPassword ] = useState(null)
+
+    useEffect(()=>{
+        console.log("password: ", password)
+        console.log("username: ", username)
+
+    },[username, password])
+
+    const handleLogin = async e =>{
+        e.preventDefault();
+        const response = await loginUser({
+            username,
+            password
+          });
+          if ('accessToken' in response) {
+            swal("Success", response.message, "success", {
+              buttons: false,
+              timer: 2000,
+            })
+            .then((value) => {
+              localStorage.setItem('accessToken', response['accessToken']);
+              localStorage.setItem('user', JSON.stringify(response['user']));
+            //   window.location.href = "/profile";
+            });
+          } else {
+            swal("Failed", response.message, "error");
+          }
+    }
 
     return ( 
 
@@ -22,10 +54,14 @@ const SignIn = () => {
                 </p>
             </div>
             <div className="signInUp__signIn-container__form-email">
-                <p>Email</p>
+                <p>Username</p>
                 <div className="signInUp__signIn-container__form-email__input">
-                    <img src={emailLogo} alt="emailLogo" />
-                    <input type="email" placeholder="Enter your email address"/>
+                    <img src={userlLogo} alt="emailLogo" />
+                    <input
+                        type="email"
+                        placeholder="Enter your email address"
+                        onChange={(e)=> setusername(e.target.value) }
+                     />
                 </div>
             </div>
 
@@ -33,7 +69,11 @@ const SignIn = () => {
                 <p>Password</p>
                 <div className="signInUp__signIn-container__form-password__input">
                     <img src={passwordLogo} alt="passwordLogo" />
-                    <input type={isShowPass ? "text" :"password"} placeholder="Enter your Password"/>
+                    <input
+                        type={isShowPass ? "text" :"password"}
+                        placeholder="Enter your Password"
+                        onChange={(e)=> setPassword(e.target.value) }
+                    />
                     <img src={eyeUnhideLogo} id={isShowPass ? "" : "none"} onClick={()=> setShowPass(!isShowPass)} alt="eyeLogo" />
                     <img src={hideEye} id={isShowPass ? "none" : ""} onClick={()=> setShowPass(!isShowPass)} alt="eyeLogo" />
                 </div>
@@ -48,7 +88,11 @@ const SignIn = () => {
             </div>
 
             <div className="signInUp__signIn-container__form-login">
-                <p><a href="#">Login</a></p>
+                <p onClick={handleLogin}>
+                <a>
+                    Login
+                </a>
+                 </p>
             </div>
 
             <div className="signInUp__signIn-container__form-socialMedia">
